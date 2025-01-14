@@ -17,8 +17,6 @@ def create_app():
     """
     try:
         app = Flask(__name__)
-
-        # Configuração da base de dados
         app.config.from_object(Config)  # Load configuration from the Config class
         register_error_handlers(app)  # Register error handlers for 404 and 500 errors
         db.init_app(app) # Initialize extensions (e.g., SQLAlchemy)
