@@ -19,6 +19,7 @@ from .employee import employees_ns
 from .vehicle import vehicles_ns
 from .work import works_ns
 from .task import tasks_ns
+from .invoice import invoice_ns
 
 # Add namespaces to the Swagger documentation and API
 api.add_namespace(clients_ns, path='/client')  # Routes for client operations
@@ -26,3 +27,4 @@ api.add_namespace(employees_ns, path='/employee')  # Routes for employee operati
 api.add_namespace(vehicles_ns, path='/vehicle')  # Routes for vehicle operations
 api.add_namespace(works_ns, path='/work')  # Routes for work operations
 api.add_namespace(tasks_ns, path='/task')  # Routes for task operations
+api.add_namespace(invoice_ns, path='/invoice')  # Routes for invoice operations
