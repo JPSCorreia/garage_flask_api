@@ -50,7 +50,7 @@ def get_vehicle(vehicle_id):
         logger.error(f"Error fetching vehicle {vehicle_id}: {e}")
         return {"error": "Internal Server Error"}
 
-def create_vehicle(brand, client_id, license_plate, model, year):
+def create_vehicle(brand, client_id, license_plate, model, year, commit=True):
     """
     Create a new vehicle.
     :param brand: The brand of the vehicle.
@@ -58,9 +58,11 @@ def create_vehicle(brand, client_id, license_plate, model, year):
     :param license_plate: The license plate of the vehicle.
     :param model: The model of the vehicle.
     :param year: The year of the vehicle.
-    :return: A dictionary containing the newly created vehicle's information.
+    :param commit: A boolean indicating whether to commit the transaction immediately.
+    :return: A dictionary containing the newly created vehicle's information or an error message.
     """
     try:
+        # Create a new vehicle instance
         vehicle = Vehicle(
             brand=brand,
             client_id=client_id,
@@ -68,8 +70,14 @@ def create_vehicle(brand, client_id, license_plate, model, year):
             model=model,
             year=year
         )
-        db.session.add(vehicle)
-        db.session.commit()
+        db.session.add(vehicle)  # Add the vehicle to the current session
+        db.session.flush()  # Ensure the vehicle_id is generated
+
+        # Commit the transaction only if `commit` is True
+        if commit:
+            db.session.commit()
+
+        # Return the vehicle details
         return {
             "vehicle_id": vehicle.vehicle_id,
             "brand": vehicle.brand,
@@ -80,8 +88,12 @@ def create_vehicle(brand, client_id, license_plate, model, year):
             "year": vehicle.year,
         }
     except Exception as e:
+        # Rollback the transaction only if `commit` is True
+        if commit:
+            db.session.rollback()
         logger.error(f"Error creating vehicle: {e}")
         return {"error": "Internal Server Error"}
+
 
 def update_vehicle(vehicle_id, brand=None, client_id=None, license_plate=None, model=None, year=None):
     """

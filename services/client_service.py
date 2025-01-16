@@ -48,19 +48,27 @@ def get_client(client_id):
         logger.error(f"Error fetching client {client_id}: {e}")
         return {"error": "Internal Server Error"}
 
-def create_client(name, email, phone, address):
+def create_client(name, email, phone, address, commit=True):
     """
     Create a new client.
     :param name: The name of the client.
     :param email: The email of the client.
     :param phone: The phone number of the client.
     :param address: The address of the client.
-    :return: tuple: A dictionary containing the newly created client's information and the HTTP status code.
+    :param commit: A boolean indicating whether to commit the transaction immediately.
+    :return: A dictionary containing the newly created client's information or an error message.
     """
     try:
+        # Create a new client instance
         client = Client(name=name, email=email, phone=phone, address=address)
-        db.session.add(client)  # Save the new client to the database
-        db.session.commit() # Save the new client to the database
+        db.session.add(client)  # Add the client to the current session
+        db.session.flush()  # Ensure the client_id is generated
+
+        # Commit the transaction only if `commit` is True
+        if commit:
+            db.session.commit()
+
+        # Return the client details
         return {
             "client_id": client.client_id,
             "name": client.name,
@@ -70,8 +78,12 @@ def create_client(name, email, phone, address):
             "created_at": client.created_at,
         }
     except Exception as e:
+        # Rollback the transaction only if `commit` is True
+        if commit:
+            db.session.rollback()
         logger.error(f"Error creating client: {e}")
         return {"error": "Internal Server Error"}
+
 
 
 def update_client(client_id, name, email, phone, address):
