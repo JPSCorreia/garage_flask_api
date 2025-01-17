@@ -62,25 +62,42 @@ def register_client_and_vehicle(client_data, vehicle_data):
         logger.error(f"Error registering client and vehicle: {e}")
         return {"error": "Internal Server Error"}
 
-#TODO: review
-def create_work_for_vehicle(vehicle_id, work_data):
+def create_work_for_vehicle(work_data):
     """
     Create a new work associated with a vehicle.
+    :param work_data: Dictionary containing work details.
+    :return: Dictionary with the created work details or an error message.
     """
     try:
+        # Criar o trabalho associado ao veículo
         work = create_work(
             work_data["cost"],
+            work_data["description"],
             work_data["start_date"],
             work_data.get("end_date"),
             work_data["status"],
-            vehicle_id
+            work_data["vehicle_id"],
         )
+        
+        # Verificar se ocorreu algum erro durante a criação
         if "error" in work:
             return {"error": "Failed to create work"}
+
+        # Serializar os campos datetime antes de retornar
+        work["start_date"] = work["start_date"].strftime("%Y-%m-%d")
+        work["end_date"] = work["end_date"].strftime("%Y-%m-%d") if work["end_date"] else None
+        work["created_at"] = work["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+
         return work
+    except KeyError as e:
+        # Erro de campo em falta no dicionário
+        logger.error(f"Missing field in work data: {e}")
+        return {"error": f"Missing field in work data: {str(e)}"}
     except Exception as e:
-        logger.error(f"Error creating work for vehicle {vehicle_id}: {e}")
+        # Erro geral
+        logger.error(f"Error creating work: {e}")
         return {"error": "Internal Server Error"}
+
 
 #TODO: review
 def add_tasks_to_work(work_id, tasks):

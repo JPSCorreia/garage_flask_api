@@ -27,15 +27,25 @@ vehicle_model = workflow_ns.model('Vehicle', {
     'license_plate': fields.String(required=True, description='License plate of the vehicle')
 })
 
+# Modelo para criar um trabalho (Work)
+work_model = workflow_ns.model('Work', {
+    'description': fields.String(required=True, description='Description of the work'),
+    'cost': fields.Float(required=True, description='Cost of the work'),
+    'start_date': fields.String(required=True, description='Start date (YYYY-MM-DD)'),
+    'end_date': fields.String(required=False, description='End date (YYYY-MM-DD)'),
+    'status': fields.String(required=True, description='Status of the work'),
+    'vehicle_id': fields.Integer(required=True, description='ID of the associated vehicle')
+})
+
 # Modelo para o payload completo
-register_client_vehicle_model = workflow_ns.model('RegisterClientVehicle', {
+register_client_and_vehicle_model = workflow_ns.model('RegisterClientVehicle', {
     'client': fields.Nested(client_model, required=True, description='Client information'),
     'vehicle': fields.Nested(vehicle_model, required=True, description='Vehicle information')
 })
 
-@workflow_ns.route('/register_client_vehicle')
+@workflow_ns.route('/register_client_and_vehicle')
 class RegisterClientAndVehicle(Resource):
-    @workflow_ns.expect(register_client_vehicle_model, validate=True)
+    @workflow_ns.expect(register_client_and_vehicle_model, validate=True)
     def post(self):
         """
         Register a new client and their corresponding vehicle.
@@ -48,14 +58,18 @@ class RegisterClientAndVehicle(Resource):
             return result, 400
         return result, 201
 
-@workflow_ns.route('/create_work/<int:vehicle_id>')
+@workflow_ns.route('/create_work')
 class CreateWork(Resource):
-    def post(self, vehicle_id):
+    @workflow_ns.expect(work_model, validate=True)  # Define o modelo esperado
+    def post(self):
         """
         Create a new work associated with a vehicle.
         """
+        # Obter os dados enviados no JSON
         data = workflow_ns.payload
-        result = create_work_for_vehicle(vehicle_id, data)
+
+        # Chamar a função para criar o trabalho associado ao veículo
+        result = create_work_for_vehicle(data)
         if "error" in result:
             return result, 400
         return result, 201
