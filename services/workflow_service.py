@@ -7,6 +7,8 @@ from services.invoice_item_service import create_invoice_item
 from sqlalchemy.exc import IntegrityError
 from utils.database import db
 from models.vehicle import Vehicle
+from models.work import Work  
+from models.task import Task
 import logging
 
 # Configurar logging
@@ -99,56 +101,32 @@ def create_work_for_vehicle(work_data):
         return {"error": "Internal Server Error"}
 
 
-#TODO: review
-def add_tasks_to_work(work_id, tasks):
+from datetime import datetime
+
+def add_tasks_to_work(work_id, tasks_data):
     """
-    Add multiple tasks to a work.
+    Add multiple tasks to a specific work.
     """
     try:
-        created_tasks = []
-        for task_data in tasks:
-            task = create_task(
-                work_id,
-                task_data["employee_id"],
-                task_data["description"],
-                task_data["start_date"],
-                task_data.get("end_date"),
-                task_data["status"]
+        tasks_to_add = []
+        for task_data in tasks_data:
+            start_date = datetime.strptime(task_data["start_date"], "%Y-%m-%d").date()
+            end_date = datetime.strptime(task_data["end_date"], "%Y-%m-%d").date() if task_data.get("end_date") else None
+            
+            task = Task(
+                description=task_data["description"],
+                employee_id=task_data["employee_id"],
+                work_id=work_id,
+                start_date=start_date,
+                end_date=end_date,
+                status=task_data["status"]
             )
-            if "error" in task:
-                return {"error": f"Failed to create task: {task_data['description']}"}
-            created_tasks.append(task)
-        return created_tasks
+            tasks_to_add.append(task)
+
+        db.session.add_all(tasks_to_add)
+        db.session.commit()
+        return {"message": f"Successfully added {len(tasks_to_add)} tasks to work {work_id}"}
     except Exception as e:
+        db.session.rollback()
         logger.error(f"Error adding tasks to work {work_id}: {e}")
-        return {"error": "Internal Server Error"}
-
-def generate_invoice_for_work(work_id):
-    """
-    Generate an invoice for a given work ID using the CRUD services.
-    """
-    try:
-        # Obter todas as tarefas concluídas associadas ao trabalho
-        tasks = Task.query.filter_by(work_id=work_id, status="completed").all()
-        if not tasks:
-            return {"error": "No completed tasks found for the given work ID"}
-
-        # Obter o cliente associado ao trabalho
-        work = Work.query.get(work_id)
-        vehicle = Vehicle.query.get(work.vehicle_id)
-        client_id = vehicle.client_id
-
-        # Criar a fatura
-        total = sum(task.cost for task in tasks)
-        iva = total * 0.23
-        total_with_iva = total + iva
-        invoice = create_invoice(client_id, datetime.now(), total, iva, total_with_iva)
-
-        # Criar itens da fatura para cada tarefa
-        for task in tasks:
-            create_invoice_item(task.description, task.cost, task.task_id, invoice["invoice_id"])
-
-        return invoice
-    except Exception as e:
-        logger.error(f"Error generating invoice for work {work_id}: {e}")
         return {"error": "Internal Server Error"}

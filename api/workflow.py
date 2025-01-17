@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Namespace para workflows
-workflow_ns = Namespace('workflow', description='Workflow operations for advanced functionalities')
+workflow_ns = Namespace('workflow', description='Workflow operations for advanced functionalities', ordered=True)
 
 # Modelo para Cliente
 client_model = workflow_ns.model('Client', {
@@ -74,14 +74,28 @@ class CreateWork(Resource):
             return result, 400
         return result, 201
 
-@workflow_ns.route('/add_tasks/<int:work_id>')
+@workflow_ns.route('/add_tasks')
 class AddTasksToWork(Resource):
-    def post(self, work_id):
+    @workflow_ns.expect(workflow_ns.model('AddTasks', {
+        'work_id': fields.Integer(required=True, description='ID of the associated work'),
+        'tasks': fields.List(fields.Nested(workflow_ns.model('Task', {
+            'description': fields.String(required=True, description='Description of the task'),
+            'employee_id': fields.Integer(required=True, description='ID of the assigned employee'),
+            'start_date': fields.String(required=True, description='Start date (YYYY-MM-DD)'),
+            'end_date': fields.String(required=False, description='End date (YYYY-MM-DD)'),
+            'status': fields.String(required=True, description='Status of the task'),
+        }))),
+    }))
+    def post(self):
         """
         Add multiple tasks to a work.
         """
         data = workflow_ns.payload
-        result = add_tasks_to_work(work_id, data["tasks"])
+        work_id = data.get('work_id')
+        tasks = data.get('tasks', [])
+
+        # Chamar o serviço para adicionar as tasks ao work
+        result = add_tasks_to_work(work_id, tasks)
         if "error" in result:
             return result, 400
         return result, 201

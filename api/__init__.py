@@ -13,7 +13,8 @@ api = Api(
     doc='/docs'  # Documentation URL (http://127.0.0.1:5000/api/docs)
 )
 
-# Import and register sub-Blueprints (namespaces)
+# Import namespaces in the desired order
+from .workflow import workflow_ns
 from .client import clients_ns
 from .employee import employees_ns
 from .vehicle import vehicles_ns
@@ -22,16 +23,14 @@ from .task import tasks_ns
 from .invoice import invoice_ns
 from .invoice_item import invoice_items_ns
 from .setting import setting_ns
-from .workflow import workflow_ns
 
-# Add namespaces to the Swagger documentation and API
-api.add_namespace(workflow_ns, path='/workflow')  # Routes for workflow operations
-api.add_namespace(clients_ns, path='/client')  # Routes for client operations
-api.add_namespace(employees_ns, path='/employee')  # Routes for employee operations
-api.add_namespace(vehicles_ns, path='/vehicle')  # Routes for vehicle operations
-api.add_namespace(works_ns, path='/work')  # Routes for work operations
-api.add_namespace(tasks_ns, path='/task')  # Routes for task operations
-api.add_namespace(invoice_ns, path='/invoice')  # Routes for invoice operations
-api.add_namespace(invoice_items_ns, path='/invoice_item')  # Routes for invoice item operations
-api.add_namespace(setting_ns, path='/setting')  # Routes for setting operations
-
+# Add namespaces in the desired order
+api.add_namespace(workflow_ns, path='/workflow')  # Workflow operations first
+api.add_namespace(clients_ns, path='/client')  # Client operations
+api.add_namespace(employees_ns, path='/employee')  # Employee operations
+api.add_namespace(vehicles_ns, path='/vehicle')  # Vehicle operations
+api.add_namespace(works_ns, path='/work')  # Work operations
+api.add_namespace(tasks_ns, path='/task')  # Task operations
+api.add_namespace(invoice_ns, path='/invoice')  # Invoice operations
+api.add_namespace(invoice_items_ns, path='/invoice_item')  # Invoice item operations
+api.add_namespace(setting_ns, path='/setting')  # Setting operations
