@@ -1,12 +1,13 @@
 import logging
-from flask_restx import Namespace, Resource
+from flask_restx import Namespace, Resource, fields
 from werkzeug.exceptions import HTTPException
 from services.task_service import (
     get_all_tasks,
     get_task,
     create_task,
     update_task,
-    delete_task
+    delete_task,
+    update_task_status
 )
 from utils.utils import generate_swagger_model
 from models.task import Task
@@ -59,3 +60,18 @@ class Task(Resource):
 
     def delete(self, task_id):
         return delete_task(task_id), 204
+
+@tasks_ns.route('/<int:task_id>/status')
+class UpdateTaskStatus(Resource):
+    @tasks_ns.expect(tasks_ns.model('TaskStatusUpdate', {
+        'status': fields.String(required=True, description='New status of the task')
+    }))
+    def put(self, task_id):
+        """
+        Update the status of a specific task.
+        """
+        data = tasks_ns.payload
+        result = update_task_status(task_id, data["status"])
+        if "error" in result:
+            return result, 400
+        return result, 200

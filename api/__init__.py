@@ -14,7 +14,6 @@ api = Api(
 )
 
 # Import namespaces in the desired order
-from .workflow import workflow_ns
 from .client import clients_ns
 from .employee import employees_ns
 from .vehicle import vehicles_ns
@@ -25,7 +24,6 @@ from .invoice_item import invoice_items_ns
 from .setting import setting_ns
 
 # Add namespaces in the desired order
-api.add_namespace(workflow_ns, path='/workflow')  # Workflow operations first
 api.add_namespace(clients_ns, path='/client')  # Client operations
 api.add_namespace(employees_ns, path='/employee')  # Employee operations
 api.add_namespace(vehicles_ns, path='/vehicle')  # Vehicle operations

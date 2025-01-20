@@ -114,3 +114,24 @@ def delete_task(task_id):
     except Exception as e:
         logger.error(f"Error deleting task {task_id}: {e}")
         return {"error": "Internal Server Error"}
+
+def update_task_status(task_id, new_status):
+    """
+    Update the status of a specific task.
+    :param task_id: ID of the task to update
+    :param new_status: New status to be set
+    :return: Dictionary with success message or error
+    """
+    try:
+        task = Task.query.get(task_id)
+        if not task:
+            return {"error": f"Task with ID {task_id} not found"}
+
+        task.status = new_status
+        db.session.commit()
+        return {"message": f"Task {task_id} status updated successfully to {new_status}"}
+
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error updating task {task_id} status: {e}")
+        return {"error": "Internal Server Error"}

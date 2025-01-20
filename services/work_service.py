@@ -150,3 +150,24 @@ def delete_work(work_id):
     except Exception as e:
         logger.error(f"Error deleting work {work_id}: {e}")
         return {"error": "Internal Server Error"}
+
+def update_work_status(work_id, new_status):
+    """
+    Update the status of a specific work.
+    :param work_id: ID of the work to update
+    :param new_status: New status to be set
+    :return: Dictionary with success message or error
+    """
+    try:
+        work = Work.query.get(work_id)
+        if not work:
+            return {"error": f"Work with ID {work_id} not found"}
+
+        work.status = new_status
+        db.session.commit()
+        return {"message": f"Work {work_id} status updated successfully to {new_status}"}
+
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error updating work {work_id} status: {e}")
+        return {"error": "Internal Server Error"}

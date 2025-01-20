@@ -1,67 +1,100 @@
+# Garage API - Projecto de desenvolvimento de uma API REST com Flask
 
-# Garage API
+## Introdução
 
-This guide explains how to install and configure the **Garage API** project. Follow the steps below to set up the project on your local machine.
+Este projeto consiste na criação de uma API para gestão de uma oficina automóvel. A API foi desenvolvida utilizando Flask e Flask-RESTx, com uma base de dados SQLite para armazenar informações sobre clientes, veículos, trabalhos, tarefas, faturas e configurações.
 
-## Installation
+## Equipa de Desenvolvimento
 
-To install and configure the Garage API, follow these steps:
+O trabalho foi realizado por:
 
-1. **Clone the repository:**  
-   Download the repository to your local machine by running the following command in your terminal:
-   ```bash
-   git clone https://github.com/nacsantos/garage_flask_api.git
-   ```
+- **João Correia**
+- **Lucas Silvestre**
+- **Vladimiro Bonaparte**
 
-2. **Navigate to the project directory:**  
-   After cloning the repository, move to the project directory:
-   ```bash
-   cd garage_flask_api
-   ```
+Curso: **TPSI (Técnico/a Especialista em Tecnologias e Programação de Sistemas de Informação) - 1223**
 
-3. **Create and activate a virtual environment:**  
-   To isolate the project dependencies, create a virtual environment. Use the following commands:  
-   - For Linux/macOS:
-     ```bash
-     python3 -m venv venv
-     source venv/bin/activate
-     ```
-   - For Windows:
-     ```bash
-     python3 -m venv venv
-     venv\Scripts\activate
-     ```
+## Objetivos do Projeto
 
-4. **Install the dependencies:**  
-   With the virtual environment active, install the required packages using the `requirements.txt` file:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Os objetivos principais do projeto incluem:
 
-5. **Run the application:**  
-   To verify that the installation is successful, start the Flask application:
-   ```bash
-   flask run
-   ```
-   The application will be available at:
-   ```
-   http://127.0.0.1:5000/api
-   ```
+- Implementação de um sistema CRUD para todas as tabelas presentes no modelo de dados fornecido.
+- Desenvolvimento de funcionalidades adicionais para automatizar processos da oficina.
+- Criação de um sistema de relatórios para facilitar a análise dos dados.
 
-## Accessing the Swagger Documentation
+## Estrutura do Projeto
 
-To access the Swagger documentation, start the Flask application and navigate to the following URL in your browser:
+A estrutura do projeto está organizada da seguinte forma:
+
+```text
+ garage_flask_api/
+    |-- api/
+    |   |-- __init__.py
+    |   |-- client.py
+    |   |-- employee.py
+    |   |-- vehicle.py
+    |   |-- work.py
+    |   |-- task.py
+    |   |-- invoice.py
+    |   |-- invoice_item.py
+    |   |-- setting.py
+    |-- services/
+    |   |-- client_service.py
+    |   |-- employee_service.py
+    |   |-- vehicle_service.py
+    |   |-- work_service.py
+    |   |-- task_service.py
+    |   |-- invoice_service.py
+    |   |-- invoice_item_service.py
+    |   |-- setting_service.py
+    |-- models/
+    |   |-- client.py
+    |   |-- employee.py
+    |   |-- vehicle.py
+    |   |-- work.py
+    |   |-- task.py
+    |   |-- invoice.py
+    |   |-- invoice_item.py
+    |   |-- setting.py
+    |-- utils/
+    |-- errors/
+    |-- config.py
+    |-- app.py
+    |-- requirements.txt
 ```
-http://127.0.0.1:5000/api/docs
-```
 
-The Swagger interface allows you to:
-- Explore all API endpoints and models.
-- Perform test calls to the API.
-- Review parameters and expected responses.
+## Funcionalidades Implementadas
 
-The Swagger documentation is a valuable tool for developers, enabling seamless interaction with the API while improving productivity and ensuring code quality.
+- **Clientes:** Registo, edição, remoção e consulta de clientes.
+- **Veículos:** Registo, edição, remoção e consulta de veículos.
+- **Trabalhos:** Associação de trabalhos a veículos e gestão de status.
+- **Tarefas:** Adição e gestão de tarefas associadas a trabalhos.
+- **Faturas:** Geração de faturas e itens de fatura.
+- **Configurações:** Definição de parâmetros configuráveis.
 
----
+## Tecnologias Utilizadas
 
-By following these steps, you will have the **Garage API** up and running on your local machine. If you encounter any issues, please check the repository or submit an issue.
+- **Backend:** Flask, Flask-RESTx
+- **Base de Dados:** SQLite
+- **Documentação:** Swagger (integrado com Flask-RESTx)
+- **Testes:** Postman, Swagger
+
+## Exemplo de alguns Endpoints
+
+Alguns dos principais endpoints implementados como pedido incluem:
+
+- `POST /api/client/` - Criar um novo cliente
+- `POST /api/vehicle/` - Criar um novo veículo
+- `GET /api/vehicle/` - Obter a lista de todos os veículos
+- `PUT /api/work/<work_id>/status` - Atualizar status de um trabalho
+- `POST /api/invoice` - Criar uma nova fatura
+
+## Considerações Finais
+
+O projeto foi concluído com sucesso, atingindo os objetivos propostos. As funcionalidades CRUD para todas as tabelas foram implementadas com sucesso e validadas através de testes.
+
+A documentação da API permite uma compreensão clara das funcionalidades, garantindo que os utilizadores da API possam facilmente compreender como a utilizar nos seus sistemas.
+
+Além disso, as boas práticas como a separação de responsabilidades ajudam a criar uma base sólida para futuras expansões, permitindo adicionar novas funcionalidades com facilidade.
+
+Resumindo, a API apresenta uma solução simples e funcional para o workflow de uma garagem.
